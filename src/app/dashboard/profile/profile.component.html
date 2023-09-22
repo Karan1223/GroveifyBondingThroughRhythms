@@ -1,0 +1,208 @@
+<div *ngIf="userProfile" class="bg-spotify_bg">
+  <div
+    class="flex flex-row bg-gradient-to-b from-spotify_brown to-spotify_topArtist_bg text-white py-6"
+  >
+    <div class="p-4 mt-24">
+      <img
+        class="rounded-full shadow-2xl"
+        src="{{ userProfile.images[1].url }}"
+        alt=""
+      />
+    </div>
+    <div class="w-full flex flex-col justify-center p-4 mt-24">
+      <p>Profile</p>
+      <p class="text-8xl font-extrabold w-fit">
+        {{ userProfile.display_name }}
+      </p>
+      <ul class="flex flex-row gap-4 w-fit">
+        <li *ngIf="publicPlaylist.items">
+          &#8226; {{ publicPlaylist.items.length }} public playlist
+        </li>
+        <li>&#8226; {{ userProfile.followers.total }} Followers</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- All time listened track and artist -->
+
+  <div
+    class="py-10 flex flex-row w-full justify-evenly text-white bg-gradient-to-b from-spotify_topArtist_bg to-spotify_bg"
+  >
+    <div class="bg-spotify_artistcard_bg rounded-lg p-8">
+      <div class="flex flex-col items-center space-y-8">
+        <p class="text-2xl">Most Listened Artist</p>
+        <img
+          src="{{ mostListenedArtist?.images[1].url }}"
+          alt=""
+          class="rounded-full"
+        />
+        <p class="text-xl text-gray-200">{{ mostListenedArtist?.name }}</p>
+      </div>
+    </div>
+    <div class="bg-spotify_artistcard_bg rounded-lg p-8">
+      <div class="flex flex-col items-center space-y-8">
+        <p class="text-2xl">Most Listened Track</p>
+        <img
+          src="{{ mostListenedTrack?.album.images[1].url }}"
+          alt=""
+          class="rounded-full"
+        />
+        <div>
+          <p class="text-xl text-gray-200">{{ mostListenedTrack?.name }}</p>
+          <ng-container
+            *ngFor="let artist of mostListenedTrack?.artists; let last = last"
+          >
+            <p class="text-gray-500 text-sm">
+              {{ artist.name }}{{ !last ? "," : "" }}
+            </p>
+            <span *ngIf="!last">&nbsp;</span>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Artist this month design -->
+
+  <div class="p-6 text-white">
+    <div class="flex flex-row w-full justify-between">
+      <p class="text-3xl my-8">Your top artists {{ artist_text }}</p>
+      <select
+        #artist
+        name="artist"
+        [(ngModel)]="artist_range"
+        (ngModelChange)="onChange()"
+        class="mr-8 self-center bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-full inline-block transition duration-300 ease-in-out"
+      >
+        <option [value]="'short_term'" selected>this month</option>
+        <option [value]="'medium_term'">from past 6 months</option>
+        <option [value]="'long_term'">all Time</option>
+      </select>
+    </div>
+
+    <div class="grid grid-cols-5 gap-8 mt-4">
+      <div
+        *ngFor="let artist of topArtistItems"
+        class="rounded-lg bg-spotify_artistcard_bg py-4 flex flex-col space-y-6"
+      >
+        <img
+          class="rounded-full self-center"
+          src="{{ artist.images[2].url }}"
+          alt=""
+        />
+        <div class="ml-8">
+          <p class="text-gray-300 text-base line-clamp-1">{{ artist.name }}</p>
+          <p class="text-gray-500 text-sm">{{ artist.type }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top tracks this month design -->
+
+  <div class="p-6 text-white bg-spotify_bg">
+    <div class="flex flex-row w-full justify-between">
+      <p class="text-3xl my-8">Your top tracks {{ track_text }}</p>
+      <select
+        #track
+        name="month"
+        [(ngModel)]="track_range"
+        (ngModelChange)="onChange()"
+        class="mr-8 self-center bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-full inline-block transition duration-300 ease-in-out"
+      >
+        <option [value]="'short_term'" selected>this month</option>
+        <option [value]="'medium_term'">past 6 months</option>
+        <option [value]="'long_term'">all Time</option>
+      </select>
+    </div>
+    <div class="grid grid-cols-2 gap-8 mt-4">
+      <div class="col-span-1">
+        <ng-container *ngFor="let track of topTracksItems; let i = index">
+          <div
+            class="rounded-lg bg-spotify_artistcard_bg py-4 flex flex-row space-x-6"
+            *ngIf="i < 5"
+          >
+            <p class="self-center ml-4 text-gray-300">{{ i + 1 }}</p>
+            <img
+              class="rounded-full self-center"
+              src="{{ track.album.images[2].url }}"
+              alt=""
+            />
+            <div>
+              <p class="text-gray-300 text-base line-clamp-1">
+                {{ track.name }}
+              </p>
+              <div class="flex flex-row">
+                <ng-container
+                  *ngFor="let artist of track.artists; let last = last"
+                >
+                  <p class="text-gray-500 text-sm">
+                    {{ artist.name }}{{ !last ? "," : "" }}
+                  </p>
+                  <span *ngIf="!last">&nbsp;</span>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+      <div class="col-span-1">
+        <ng-container *ngFor="let track of topTracksItems; let i = index">
+          <div
+            class="rounded-lg bg-spotify_artistcard_bg py-4 flex flex-row space-x-6"
+            *ngIf="i >= 5"
+          >
+            <p class="self-center ml-4 text-gray-300">{{ i + 1 }}</p>
+            <img
+              class="rounded-full self-center"
+              src="{{ track.album.images[2].url }}"
+              alt=""
+            />
+            <div>
+              <p class="text-gray-300 text-base line-clamp-1">
+                {{ track.name }}
+              </p>
+              <div class="flex flex-row">
+                <ng-container
+                  *ngFor="let artist of track.artists; let last = last"
+                >
+                  <p class="text-gray-500 text-sm">
+                    {{ artist.name }}{{ !last ? "," : "" }}
+                  </p>
+                  <span *ngIf="!last">&nbsp;</span>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+
+  <!-- Public playlist design -->
+
+  <div class="p-6 text-white">
+    <p class="text-3xl my-8">Your playlists</p>
+
+    <div class="grid grid-cols-5 gap-8 mt-4" *ngIf="publicPlaylist.items">
+      <div
+        *ngFor="let playlist of publicPlaylist.items"
+        class="rounded-lg bg-spotify_artistcard_bg py-4 flex flex-col space-y-6"
+      >
+        <img
+          class="rounded-full self-center"
+          src="{{ playlist.images[1].url }}"
+          alt=""
+        />
+        <div class="ml-8 text-center">
+          <p class="text-gray-300 text-base line-clamp-1">
+            {{ playlist.name }}
+          </p>
+          <p class="text-gray-500 text-sm" *ngIf="playlist.tracks">
+            {{ playlist.tracks.total }} tracks
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
